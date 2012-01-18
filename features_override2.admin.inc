@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ *   Features Override forms
+ */
+
+/**
  * Form callback for features overrides form.
  */
 function features_override2_form($form, $form_state, $feature = NULL) {
@@ -13,13 +18,13 @@ function features_override2_form($form, $form_state, $feature = NULL) {
   if (isset($feature)) {
     $form['#feature'] = $feature;
     $form['name'] = array(
-      '#type' => 'markup', 
+      '#type' => 'markup',
       '#markup' => $feature->info['name'],
       '#prefix' => '<div class="features-components"><h3>',
       '#suffix' => '</h3></div>',
     );
     $form['description'] = array(
-      '#type' => 'markup', 
+      '#type' => 'markup',
       '#markup' => t('Features Override line details.  Select lines to export.'),
       '#prefix' => '<h4>',
       '#suffix' => '</h4>',
@@ -31,7 +36,7 @@ function features_override2_form($form, $form_state, $feature = NULL) {
   }
   else {
     $form['name'] = array(
-      '#type' => 'markup', 
+      '#type' => 'markup',
       '#markup' => 'Overrides',
       '#prefix' => '<div class="features-components"><h3>',
       '#suffix' => '</h3></div>',
@@ -42,16 +47,16 @@ function features_override2_form($form, $form_state, $feature = NULL) {
 
   foreach ($override_list as $type_name => $overrides) {
     $form['sources'][$type_name]['header'] = array(
-      '#type' => 'markup', 
+      '#type' => 'markup',
       '#markup' => $type_name,
       '#prefix' => '<h4>',
       '#suffix' => '</h4>',
     );
-    
+
     foreach ($overrides as $component => $element) {
       $form['sources'][$type_name][$component] = array(
         '#type' => 'fieldset',
-        '#title' => $component,
+        '#title' => check_plain($component),
       );
       foreach ($element as $key => $value) {
         $code = array();
@@ -60,31 +65,31 @@ function features_override2_form($form, $form_state, $feature = NULL) {
         features_override2_export_override( $code, '', $value, NULL);
         $i = 0;
         foreach ($code as $line) {
-          $options[$key.'.'.$i] = $line;
+          $options[$key . '.' . $i] = $line;
           if ($default_value[$type_name]) {
-            $default_values[] = $key.'.'.$i;
+            $default_values[] = $key . '.' . $i;
           }
-          $form['#code'][$component][$key.'.'.$i] = "['{$component}']['{$key}']".$line;
+          $form['#code'][$component][$key . '.' . $i] = "['{$component}']['{$key}']" . $line;
           $i++;
         }
         $form['sources'][$type_name][$component][$key][$component] = array(
           '#type' => 'checkboxes',
           '#options' => features_dom_encode_options($options),
-          '#title' => $key,
+          '#title' => check_plain($key),
           '#default_value' => features_dom_encode_options($default_values, FALSE),
         );
       }
     }
   }
-  
+
   if (count($overrides) == 0) {
     $form['message'] = array(
-      '#type' => 'markup', 
+      '#type' => 'markup',
       '#markup' => 'There is nothing overridden to display.',
       '#prefix' => '<p>',
       '#suffix' => '</p>',
     );
-    
+
   }
   if (isset($feature)) {
     $form['buttons']['submit'] = array(
@@ -130,7 +135,7 @@ function features_override2_export_submit($form, &$form_state) {
     }
 
     drupal_add_http_header('Content-type', 'application/x-tar');
-    drupal_add_http_header('Content-Disposition', 'attachment; filename="'. $filename .'"');
+    drupal_add_http_header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     drupal_send_headers();
 
     $tar = array();
@@ -148,7 +153,7 @@ function features_override2_export_submit($form, &$form_state) {
       // up the output of our file stream. Suppress errors in this one case in
       // order to produce valid output.
       foreach (@file_scan_directory($module_path, '/.*/') as $file) {
-        $filename = substr($file->uri, strlen($module_path) + 1);
+        $filename = drupal_substr($file->uri, drupal_strlen($module_path) + 1);
         if (!in_array($filename, $filenames)) {
           // Add this file.
           $contents = file_get_contents($file->uri);
@@ -157,7 +162,7 @@ function features_override2_export_submit($form, &$form_state) {
         }
       }
     }
-    print pack("a1024","");
+    print pack("a1024", "");
     exit;
   }
 }
