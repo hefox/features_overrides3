@@ -415,8 +415,8 @@ function features_override2_features_export_render($module, $data, $export = NUL
   $code[] = '  return $overrides;';
   //dsm(implode("\n", $code));
   $list[FEATURES_OVERRIDE_HOOK] = implode("\n", $code);  // should match the default_hook value
-  $info = module_invoke_all('features_api');
 
+  $info = features_get_components();
   $list['#function_args'] = array();
   foreach ($alters as $component => $dummy) {
     if (!empty($info[$component]['default_hook'])) {
