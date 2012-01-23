@@ -106,8 +106,8 @@ function features_override2_features_export_render($module, $data, $export = NUL
       // Add in an alter function.
       $alter_code = array();
       $alter_code[] = '  if (!empty($data["' . $element . '"])) {';
-      foreach (features_override_render_override($differences, 1) as $code) {
-        $alter_code[] = '    $data' . $code . ';';
+      foreach (features_override_render_override($differences, is_array($differences)) as $code) {
+        $alter_code[] = '    $data["' . $element . '"]' . $code . ';';
       }
       $alter_code[] = '  }';
       $list[$info[$component]['default_hook'] . '_alter'] = array('code' => implode("\n", $alter_code), 'args' => '&$data');
