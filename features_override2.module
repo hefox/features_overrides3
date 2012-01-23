@@ -120,7 +120,7 @@ function features_override_render_override($differences, $parent_type) {
   $code = array();
   foreach ($differences as $key => $value) {
     if (is_array($value) && !empty($value['features_override_difference_root'])) {
-      return _features_override_key($parent_type, $key) . ' = ' . features_var_export($value['difference']);
+      $code[] = _features_override_key($parent_type, $key) . ' = ' . features_var_export($value['difference']);
     }
     else {
       $return = features_override_render_override($value, is_array($value));
